@@ -48,29 +48,66 @@ $result = $stmt->get_result();
 ?>
 
 <div class="card">
-    <h2>Daftar Surat Jalan</h2>
-    <a href="add.php" class="btn btn-success">+ Buat Surat Jalan Baru</a>
+    <div class="page-header">
+        <h2 class="page-title"><i class="fas fa-file-alt"></i> Daftar Surat Jalan</h2>
+        <div class="page-actions">
+            <a href="add.php" class="btn btn-success"><i class="fas fa-plus-circle"></i> Buat Surat Jalan</a>
+        </div>
+    </div>
     
     <?php if (isset($_GET['msg']) && $_GET['msg'] == 'success'): ?>
-        <div class="alert alert-success">Surat jalan berhasil disimpan!</div>
+        <script>
+            window.onload = function() {
+                showAlert('Berhasil!', 'Surat jalan berhasil disimpan.', 'success');
+            };
+        </script>
+    <?php endif; ?>
+    
+    <?php if (isset($_GET['msg']) && $_GET['msg'] == 'updated'): ?>
+        <script>
+            window.onload = function() {
+                showAlert('Berhasil Diperbarui!', 'Surat jalan berhasil diperbarui.', 'success');
+            };
+        </script>
+    <?php endif; ?>
+    
+    <?php if (isset($_GET['msg']) && $_GET['msg'] == 'deleted'): ?>
+        <script>
+            window.onload = function() {
+                showAlert('Berhasil Dihapus!', 'Surat jalan berhasil dihapus.', 'success');
+            };
+        </script>
+    <?php endif; ?>
+    
+    <?php if (isset($_GET['msg']) && $_GET['msg'] == 'error'): ?>
+        <script>
+            window.onload = function() {
+                showAlert('Gagal!', 'Terjadi kesalahan saat memproses data. Silakan coba lagi.', 'error');
+            };
+        </script>
     <?php endif; ?>
     
     <!-- Filter -->
-    <div style="background: #ecf0f1; padding: 15px; border-radius: 5px; margin: 20px 0;">
-        <form method="GET" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px;">
-            <input type="text" name="no_surat" placeholder="No. Surat" value="<?php echo $_GET['no_surat'] ?? ''; ?>" style="padding: 8px;">
-            <input type="text" name="pelanggan" placeholder="Nama Pelanggan" value="<?php echo $_GET['pelanggan'] ?? ''; ?>" style="padding: 8px;">
-            <input type="date" name="tanggal_dari" value="<?php echo $_GET['tanggal_dari'] ?? ''; ?>" style="padding: 8px;">
-            <input type="date" name="tanggal_sampai" value="<?php echo $_GET['tanggal_sampai'] ?? ''; ?>" style="padding: 8px;">
-            <button type="submit" class="btn btn-primary">Filter</button>
-            <a href="list.php" class="btn btn-danger">Reset</a>
+    <div class="filter-section">
+        <h3 class="filter-title">
+            <i class="fas fa-filter"></i> Filter Data
+        </h3>
+        <form method="GET" class="filter-grid">
+            <input type="text" name="no_surat" placeholder="No. Surat" value="<?php echo $_GET['no_surat'] ?? ''; ?>">
+            <input type="text" name="pelanggan" placeholder="Nama Pelanggan" value="<?php echo $_GET['pelanggan'] ?? ''; ?>">
+            <input type="date" name="tanggal_dari" placeholder="Tanggal Dari" value="<?php echo $_GET['tanggal_dari'] ?? ''; ?>">
+            <input type="date" name="tanggal_sampai" placeholder="Tanggal Sampai" value="<?php echo $_GET['tanggal_sampai'] ?? ''; ?>">
+            <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i> Cari</button>
+            <a href="list.php" class="btn btn-danger"><i class="fas fa-redo"></i> Reset</a>
         </form>
     </div>
     
+    <div class="table-responsive">
     <table>
         <tr>
             <th>No</th>
             <th>No. Surat</th>
+            <th>Nomor PO</th>
             <th>Tanggal</th>
             <th>Pelanggan</th>
             <th>Tujuan</th>
@@ -83,23 +120,27 @@ $result = $stmt->get_result();
             while ($row = $result->fetch_assoc()) {
                 echo "<tr>";
                 echo "<td>" . $no++ . "</td>";
-                echo "<td><strong>" . $row['no_surat'] . "</strong></td>";
-                echo "<td>" . date('d/m/Y', strtotime($row['tanggal'])) . "</td>";
-                echo "<td>" . htmlspecialchars($row['nama_pelanggan']) . "</td>";
-                echo "<td>" . htmlspecialchars($row['tujuan']) . "</td>";
+                echo "<td><strong style='color: var(--primary-color);'>" . htmlspecialchars($row['no_surat']) . "</strong></td>";
+                echo "<td>" . (!empty($row['nomor_po']) ? '<i class="fas fa-file-invoice"></i> ' . htmlspecialchars($row['nomor_po']) : '<span style="color: var(--text-secondary); font-style: italic;">-</span>') . "</td>";
+                echo "<td><i class='far fa-calendar'></i> " . date('d/m/Y', strtotime($row['tanggal'])) . "</td>";
+                echo "<td><i class='far fa-building'></i> " . htmlspecialchars($row['nama_pelanggan']) . "</td>";
+                echo "<td><i class='fas fa-map-marker-alt'></i> " . htmlspecialchars($row['tujuan']) . "</td>";
                 // echo "<td>" . htmlspecialchars($row['kendaraan']) . "</td>";
                 echo "<td>
-                        <a href='print.php?id=" . $row['id'] . "' class='btn btn-primary btn-sm' target='_blank'>Cetak</a>
-                        <a href='edit.php?id=" . $row['id'] . "' class='btn btn-warning btn-sm'>Edit</a>
-                        <a href='../../process/surat_jalan_process.php?action=delete&id=" . $row['id'] . "' class='btn btn-danger btn-sm' onclick='return confirmDelete()'>Hapus</a>
+                        <div class='table-actions'>
+                            <a href='print.php?id=" . $row['id'] . "' class='btn btn-primary btn-sm' target='_blank' title='Cetak surat jalan'><i class='fas fa-print'></i></a>
+                            <a href='edit.php?id=" . $row['id'] . "' class='btn btn-warning btn-sm' title='Edit data'><i class='fas fa-edit'></i></a>
+                            <a href='../../process/surat_jalan_process.php?action=delete&id=" . $row['id'] . "' class='btn btn-danger btn-sm' onclick='return confirmDelete()' title='Hapus data'><i class='fas fa-trash'></i></a>
+                        </div>
                       </td>";
                 echo "</tr>";
             }
         } else {
-            echo "<tr><td colspan='7' style='text-align:center;'>Belum ada data surat jalan</td></tr>";
+            echo "<tr><td colspan='7'><div class='empty-state'><i class='fas fa-inbox'></i><p>Belum ada data surat jalan</p></div></td></tr>";
         }
         ?>
     </table>
+    </div>
 </div>
 
 <?php include '../../template/footer.php'; ?>

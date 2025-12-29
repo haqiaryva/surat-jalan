@@ -18,8 +18,9 @@ if ($action == 'add') {
     if ($stmt->execute()) {
         header("Location: ../pages/pelanggan/list.php?msg=success");
     } else {
-        echo "Error: " . $stmt->error;
+        header("Location: ../pages/pelanggan/list.php?msg=error");
     }
+    exit();
 }
 
 if ($action == 'edit') {
@@ -33,10 +34,11 @@ if ($action == 'edit') {
     $stmt->bind_param("ssssi", $nama, $alamat, $telepon, $email, $id);
     
     if ($stmt->execute()) {
-        header("Location: ../pages/pelanggan/list.php?msg=success");
+        header("Location: ../pages/pelanggan/list.php?msg=updated");
     } else {
-        echo "Error: " . $stmt->error;
+        header("Location: ../pages/pelanggan/list.php?msg=error");
     }
+    exit();
 }
 
 if ($action == 'delete') {
@@ -48,8 +50,9 @@ if ($action == 'delete') {
     if ($stmt->execute()) {
         header("Location: ../pages/pelanggan/list.php?msg=deleted");
     } else {
-        echo "Error: " . $stmt->error;
+        header("Location: ../pages/pelanggan/list.php?msg=error");
     }
+    exit();
 }
 ?>
 

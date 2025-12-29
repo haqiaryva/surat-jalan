@@ -12,6 +12,7 @@ if ($action == 'add') {
     try {
         // Insert surat jalan
         $no_surat = $_POST['no_surat'];
+        $nomor_po = $_POST['nomor_po'] ?? '';
         $tanggal = $_POST['tanggal'];
         $id_pelanggan = $_POST['id_pelanggan'];
         $tujuan = $_POST['tujuan'];
@@ -19,8 +20,8 @@ if ($action == 'add') {
         // $sopir = $_POST['sopir'];
         $keterangan = $_POST['keterangan'];
         
-        $stmt = $conn->prepare("INSERT INTO surat_jalan (no_surat, tanggal, id_pelanggan, tujuan, keterangan) VALUES (?, ?, ?, ?, ?)");
-        $stmt->bind_param("ssiss", $no_surat, $tanggal, $id_pelanggan, $tujuan, $keterangan);
+        $stmt = $conn->prepare("INSERT INTO surat_jalan (no_surat, nomor_po, tanggal, id_pelanggan, tujuan, keterangan) VALUES (?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("sssiss", $no_surat, $nomor_po, $tanggal, $id_pelanggan, $tujuan, $keterangan);
         $stmt->execute();
         
         $id_surat_jalan = $conn->insert_id;
@@ -40,11 +41,13 @@ if ($action == 'add') {
         }
         
         $conn->commit();
-        header("Location: ../pages/surat-jalan/print.php?id=" . $id_surat_jalan);
+        header("Location: ../pages/surat-jalan/list.php?msg=success");
+        exit();
         
     } catch (Exception $e) {
         $conn->rollback();
-        echo "Error: " . $e->getMessage();
+        header("Location: ../pages/surat-jalan/list.php?msg=error");
+        exit();
     }
 }
 
@@ -53,14 +56,15 @@ if ($action == 'edit') {
     
     try {
         $id = $_POST['id'];
+        $nomor_po = $_POST['nomor_po'] ?? '';
         $tanggal = $_POST['tanggal'];
         $id_pelanggan = $_POST['id_pelanggan'];
         $tujuan = $_POST['tujuan'];
         $keterangan = $_POST['keterangan'];
         
         // Update surat jalan
-        $stmt = $conn->prepare("UPDATE surat_jalan SET tanggal=?, id_pelanggan=?, tujuan=?,keterangan=? WHERE id=?");
-        $stmt->bind_param("sissi", $tanggal, $id_pelanggan, $tujuan, $keterangan, $id);
+        $stmt = $conn->prepare("UPDATE surat_jalan SET nomor_po=?, tanggal=?, id_pelanggan=?, tujuan=?, keterangan=? WHERE id=?");
+        $stmt->bind_param("ssissi", $nomor_po, $tanggal, $id_pelanggan, $tujuan, $keterangan, $id);
         $stmt->execute();
         
         // Hapus detail lama
@@ -81,25 +85,27 @@ if ($action == 'edit') {
         }
         
         $conn->commit();
-        header("Location: ../pages/surat-jalan/list.php?msg=success");
+        header("Location: ../pages/surat-jalan/list.php?msg=updated");
+        exit();
         
     } catch (Exception $e) {
         $conn->rollback();
-        echo "Error: " . $e->getMessage();
+        header("Location: ../pages/surat-jalan/list.php?msg=error");
+        exit();
     }
 }
 
 if ($action == 'delete') {
     $id = $_GET['id'];
     
-    // Detail akan terhapus otomatis karena ON DELETE CASCADE
     $stmt = $conn->prepare("DELETE FROM surat_jalan WHERE id=?");
     $stmt->bind_param("i", $id);
     
     if ($stmt->execute()) {
         header("Location: ../pages/surat-jalan/list.php?msg=deleted");
     } else {
-        echo "Error: " . $stmt->error;
+        header("Location: ../pages/surat-jalan/list.php?msg=error");
     }
+    exit();
 }
 ?>

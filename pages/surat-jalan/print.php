@@ -190,6 +190,9 @@ $perusahaan = $conn->query("SELECT * FROM perusahaan LIMIT 1")->fetch_assoc();
                 <h3>Informasi Surat</h3>
                 <p><strong>No. Surat:</strong> <?php echo $surat['no_surat']; ?></p>
                 <p><strong>Tanggal:</strong> <?php echo date('d F Y', strtotime($surat['tanggal'])); ?></p>
+                <?php if (!empty($surat['nomor_po'])): ?>
+                <p><strong>Nomor PO:</strong> <?php echo htmlspecialchars($surat['nomor_po']); ?></p>
+                <?php endif; ?>
             </div>
         </div>
         <div class="info-right">

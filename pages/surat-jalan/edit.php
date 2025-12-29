@@ -45,6 +45,11 @@ $pelangganResult = $conn->query($pelangganQuery);
         </div>
         
         <div class="form-group">
+            <label>Nomor PO *</label>
+            <input type="text" name="nomor_po" value="<?php echo htmlspecialchars($surat['nomor_po'] ?? ''); ?>" placeholder="Masukkan nomor PO" required>
+        </div>
+        
+        <div class="form-group">
             <label>Pelanggan *</label>
             <select name="id_pelanggan" required>
                 <option value="">-- Pilih Pelanggan --</option>

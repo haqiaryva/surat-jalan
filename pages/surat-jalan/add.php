@@ -37,25 +37,30 @@ $pelangganResult = $conn->query($pelangganQuery);
 ?>
 
 <div class="card">
-    <h2>Buat Surat Jalan Baru</h2>
+    <h2><i class="fas fa-file-medical"></i> Buat Surat Jalan Baru</h2>
     
     <form action="../../process/surat_jalan_process.php" method="POST">
         <input type="hidden" name="action" value="add">
         
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
             <div class="form-group">
-                <label>No. Surat *</label>
-                <input type="text" name="no_surat" value="<?php echo $noSurat; ?>" readonly style="background: #ecf0f1;">
+                <label><i class="fas fa-hashtag"></i> No. Surat *</label>
+                <input type="text" name="no_surat" value="<?php echo $noSurat; ?>" readonly style="background: var(--light-bg); cursor: not-allowed;">
             </div>
             
             <div class="form-group">
-                <label>Tanggal *</label>
+                <label><i class="far fa-calendar-alt"></i> Tanggal *</label>
                 <input type="date" name="tanggal" value="<?php echo date('Y-m-d'); ?>" required>
             </div>
         </div>
         
         <div class="form-group">
-            <label>Pelanggan *</label>
+            <label><i class="fas fa-file-invoice"></i> Nomor PO *</label>
+            <input type="text" name="nomor_po" placeholder="Masukkan nomor PO" required>
+        </div>
+        
+        <div class="form-group">
+            <label><i class="fas fa-building"></i> Pelanggan *</label>
             <select name="id_pelanggan" required>
                 <option value="">-- Pilih Pelanggan --</option>
                 <?php while ($pelanggan = $pelangganResult->fetch_assoc()): ?>
@@ -67,8 +72,8 @@ $pelangganResult = $conn->query($pelangganQuery);
         </div>
         
         <div class="form-group">
-            <label>Tujuan Pengiriman *</label>
-            <textarea name="tujuan" required></textarea>
+            <label><i class="fas fa-map-marked-alt"></i> Tujuan Pengiriman *</label>
+            <textarea name="tujuan" required placeholder="Masukkan alamat tujuan pengiriman"></textarea>
         </div>
         
         <!-- <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
@@ -84,15 +89,15 @@ $pelangganResult = $conn->query($pelangganQuery);
         </div> -->
         
         <div class="form-group">
-            <label>Keterangan</label>
-            <textarea name="keterangan"></textarea>
+            <label><i class="fas fa-sticky-note"></i> Keterangan</label>
+            <textarea name="keterangan" placeholder="Keterangan tambahan (opsional)"></textarea>
         </div>
         
-        <hr style="margin: 30px 0;">
+        <hr style="margin: 30px 0; border: none; border-top: 2px dashed var(--border-color);">
         
-        <h3>Detail Barang</h3>
+        <h3 style="display: flex; align-items: center; gap: 0.5rem;"><i class="fas fa-boxes" style="color: var(--primary-color);"></i> Detail Barang</h3>
         <br>
-        <button type="button" onclick="addBarangRow()" class="btn btn-primary" style="margin-bottom: 10px;">+ Tambah Barang</button>
+        <button type="button" onclick="addBarangRow()" class="btn btn-primary" style="margin-bottom: 15px;"><i class="fas fa-plus-circle"></i> Tambah Barang</button>
         
         <table id="barangTable" style="font-size: 14px;">
             <tr>
@@ -115,30 +120,33 @@ $pelangganResult = $conn->query($pelangganQuery);
             </tr>
         </table>
         
-        <div style="margin-top: 30px;">
-            <button type="submit" class="btn btn-success">💾 Simpan Surat Jalan</button>
-            <a href="list.php" class="btn btn-danger">Batal</a>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-success"><i class="fas fa-save"></i> Simpan Surat Jalan</button>
+            <a href="list.php" class="btn btn-danger"><i class="fas fa-arrow-left"></i> Kembali</a>
         </div>
     </form>
 </div>
 
 <style>
-    .btn-sm {
-        padding: 5px 10px;
-        font-size: 12px;
-    }
     #barangTable input {
-        border: 1px solid #ddd;
-        border-radius: 3px;
+        border: 2px solid var(--border-color);
+        border-radius: 6px;
     }
     /* Make JS-added inputs match the first row styling */
     .form-control-sm {
         width: 100%;
-        padding: 5px;
-        border: 1px solid #ddd;
-        border-radius: 3px;
+        padding: 0.5rem 0.75rem;
+        border: 2px solid var(--border-color);
+        border-radius: 6px;
         box-sizing: border-box;
-        font-size: 14px;
+        font-size: 0.875rem;
+        font-family: inherit;
+        transition: all 0.3s ease;
+    }
+    .form-control-sm:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
     }
 </style>
 

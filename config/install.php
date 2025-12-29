@@ -32,6 +32,7 @@ $sql2 = "CREATE TABLE IF NOT EXISTS pelanggan (
 $sql3 = "CREATE TABLE IF NOT EXISTS surat_jalan (
     id INT PRIMARY KEY AUTO_INCREMENT,
     no_surat VARCHAR(50) UNIQUE,
+    nomor_po VARCHAR(100),
     tanggal DATE,
     id_pelanggan INT,
     tujuan TEXT,
@@ -52,10 +53,21 @@ $sql4 = "CREATE TABLE IF NOT EXISTS detail_surat_jalan (
     FOREIGN KEY (id_surat_jalan) REFERENCES surat_jalan(id) ON DELETE CASCADE
 )";
 
+// Tabel users
+$sql5 = "CREATE TABLE IF NOT EXISTS users (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    username VARCHAR(50) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    nama_lengkap VARCHAR(100) NOT NULL,
+    role ENUM('admin', 'user') DEFAULT 'user',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+)";
+
 $conn->query($sql1);
 $conn->query($sql2);
 $conn->query($sql3);
 $conn->query($sql4);
+$conn->query($sql5);
 
 // Insert data perusahaan default
 $check = $conn->query("SELECT * FROM perusahaan LIMIT 1");
@@ -64,6 +76,23 @@ if ($check->num_rows == 0) {
                   VALUES ('PT. Contoh Jaya', 'Jl. Contoh No. 123', '021-12345678', 'info@contohjaya.com')");
 }
 
-echo "Database dan tabel berhasil dibuat!<br>";
-echo "<a href='../index.php'>Kembali ke Dashboard</a>";
+// Insert user default
+$checkUser = $conn->query("SELECT * FROM users WHERE username = 'admin'");
+if ($checkUser->num_rows == 0) {
+    $username = "admin";
+    $password = password_hash("admin123", PASSWORD_DEFAULT);
+    $nama_lengkap = "Administrator";
+    $role = "admin";
+    
+    $stmt = $conn->prepare("INSERT INTO users (username, password, nama_lengkap, role) VALUES (?, ?, ?, ?)");
+    $stmt->bind_param("ssss", $username, $password, $nama_lengkap, $role);
+    $stmt->execute();
+}
+
+echo "✅ Database dan tabel berhasil dibuat!<br>";
+echo "✅ User default berhasil dibuat!<br>";
+echo "<br><strong>Login Credentials:</strong><br>";
+echo "Username: <strong>admin</strong><br>";
+echo "Password: <strong>admin123</strong><br>";
+echo "<br><a href='../login.php'>Login Sekarang</a>";
 ?>
